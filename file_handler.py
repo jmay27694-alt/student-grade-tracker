@@ -2,7 +2,6 @@
 import csv
 import os
 
-
 def save_student(
     filename: str,
     name: str,
@@ -15,17 +14,26 @@ def save_student(
     """Save or update a student in a CSV file."""
     students = []
 
+   
+    print(f"DEBUG: Saving student data to: {os.path.abspath(filename)}")
+
+   
     if os.path.exists(filename):
-        with open(filename, "r", newline="") as file:
-            reader = csv.DictReader(file)
+        try:
+            with open(filename, "r", newline="") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    
+                    if row.get("name"):
+                        students.append(row)
+        except Exception as e:
+            print(f"DEBUG: Error reading file: {e}")
 
-            for row in reader:
-                if "name" in row and row["name"]:
-                    students.append(row)
-
+  
     score_text = "|".join(str(score) for score in scores)
     updated = False
 
+    
     for student in students:
         if student["name"].lower() == name.lower():
             student["scores"] = score_text
@@ -34,6 +42,8 @@ def save_student(
             student["lowest"] = f"{lowest:.2f}"
             student["final_grade"] = final_grade
             updated = True
+            break
+
 
     if not updated:
         students.append({
@@ -45,23 +55,33 @@ def save_student(
             "final_grade": final_grade
         })
 
-    with open(filename, "w", newline="") as file:
-        fieldnames = ["name", "scores", "average", "highest", "lowest", "final_grade"]
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(students)
+  
+    try:
+        with open(filename, "w", newline="") as file:
+            fieldnames = ["name", "scores", "average", "highest", "lowest", "final_grade"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(students)
+        print("DEBUG: File write successful.")
+    except PermissionError:
+        print("ERROR: Please close the CSV file in Excel before saving!")
+    except Exception as e:
+        print(f"DEBUG: Write error: {e}")
 
 
 def load_student(filename: str, name: str) -> dict[str, str] | None:
     """Load a student by name from a CSV file."""
     if not os.path.exists(filename):
+        print(f"DEBUG: File {filename} does not exist.")
         return None
 
-    with open(filename, "r", newline="") as file:
-        reader = csv.DictReader(file)
-
-        for row in reader:
-            if "name" in row and row["name"].lower() == name.lower():
-                return row
+    try:
+        with open(filename, "r", newline="") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row.get("name") and row["name"].lower() == name.lower():
+                    return row
+    except Exception as e:
+        print(f"DEBUG: Error loading file: {e}")
 
     return None
