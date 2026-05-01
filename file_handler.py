@@ -1,3 +1,4 @@
+# AI used to help brainstorm on how I wanted to arrange the files after inputted.
 import csv
 import os
 
