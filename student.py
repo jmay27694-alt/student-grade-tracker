@@ -18,6 +18,7 @@ class Student:
         return min(self.scores)
 
     def get_final_grade(self) -> str:
+# AI used for Docstring formatting.
         """Return the final letter grade."""
         average = self.get_average()
 
