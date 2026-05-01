@@ -33,7 +33,6 @@ class GradeController(QMainWindow):
 
         for index in range(number_of_scores):
             score_text = score_inputs[index].text().strip()
-
             if score_text == "":
                 self.messageLabel.setText("Score fields cannot be empty.")
                 return None
@@ -41,7 +40,7 @@ class GradeController(QMainWindow):
             if "/" in score_text:
                 self.messageLabel.setText("Do not use /100. Enter numbers only.")
                 return None
-
+# AI used for Input Validation patterns.
             try:
                 score = float(score_text)
             except ValueError:
@@ -121,7 +120,7 @@ class GradeController(QMainWindow):
         if data is None:
             self.messageLabel.setText("Student not found.")
             return
-
+# AI used for Input Validation patterns.
         scores = [float(score) for score in data["scores"].split("|")]
         self.student = Student(data["name"], scores)
 
